@@ -67,6 +67,7 @@ public class LogInterceptor implements HandlerInterceptor
                 String methodName = method.getDeclaringClass().getName() + "." + method.getName();
                 String desc = log.desc();
                 logger.info("请求的url：" + uri + "，方法名：" + methodName + "，描述：" + desc + "，运行时间：" + runTime + "ms");
+                THREAD_LOCAL.remove();
             }
         }
     }
