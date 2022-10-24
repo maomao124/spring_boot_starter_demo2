@@ -1,0 +1,4 @@
+mao\logspringbootstarter\config\LogAutoConfiguration.class
+mao\logspringbootstarter\test.class
+mao\logspringbootstarter\log\Log.class
+mao\logspringbootstarter\interceptor\LogInterceptor.class
