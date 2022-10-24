@@ -110,7 +110,6 @@ public class TestController
      * @return {@link String}
      */
     @GetMapping("/test6")
-    @Log(desc = "这是test5方法的描述信息")
     public String test6()
     {
         return "6 success";

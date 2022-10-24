@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
  * Description(描述)： 无
  */
 
-public class LogInterceptor extends HandlerInterceptorAdapter
+public class LogInterceptor implements HandlerInterceptor
 {
 
     private static final ThreadLocal<Long> THREAD_LOCAL = new ThreadLocal<>();
