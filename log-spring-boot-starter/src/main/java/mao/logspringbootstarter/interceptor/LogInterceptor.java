@@ -1,6 +1,8 @@
 package mao.logspringbootstarter.interceptor;
 
 import mao.logspringbootstarter.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,8 +27,10 @@ import java.lang.reflect.Method;
 
 public class LogInterceptor implements HandlerInterceptor
 {
+
     private static final ThreadLocal<Long> THREAD_LOCAL = new ThreadLocal<>();
 
+    private static final Logger logger = LoggerFactory.getLogger(LogInterceptor.class);
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception
@@ -47,5 +51,17 @@ public class LogInterceptor implements HandlerInterceptor
             throws Exception
     {
         long endTime = System.currentTimeMillis();
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        Method method = handlerMethod.getMethod();
+        Log log = method.getAnnotation(Log.class);
+        if (log != null)
+        {
+            Long startTime = THREAD_LOCAL.get();
+            long runTime = endTime - startTime;
+            String uri = request.getRequestURI();
+            String methodName = method.getDeclaringClass().getName() + "." + method.getName();
+            String desc = log.desc();
+            logger.info("请求的url：" + uri + "，方法名：" + methodName + "，描述：" + desc + "，运行时间：" + runTime);
+        }
     }
 }
