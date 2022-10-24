@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
  * Description(描述)： 无
  */
 
-public class LogInterceptor implements HandlerInterceptor
+public class LogInterceptor extends HandlerInterceptorAdapter
 {
 
     private static final ThreadLocal<Long> THREAD_LOCAL = new ThreadLocal<>();
@@ -35,13 +35,16 @@ public class LogInterceptor implements HandlerInterceptor
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception
     {
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        Method method = handlerMethod.getMethod();
-        Log log = method.getAnnotation(Log.class);
-        if (log != null)
+        if (handler instanceof HandlerMethod)
         {
-            long startTime = System.currentTimeMillis();
-            THREAD_LOCAL.set(startTime);
+            HandlerMethod handlerMethod = (HandlerMethod) handler;
+            Method method = handlerMethod.getMethod();
+            Log log = method.getAnnotation(Log.class);
+            if (log != null)
+            {
+                long startTime = System.currentTimeMillis();
+                THREAD_LOCAL.set(startTime);
+            }
         }
         return true;
     }
@@ -50,18 +53,21 @@ public class LogInterceptor implements HandlerInterceptor
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)
             throws Exception
     {
-        long endTime = System.currentTimeMillis();
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        Method method = handlerMethod.getMethod();
-        Log log = method.getAnnotation(Log.class);
-        if (log != null)
+        if (handler instanceof HandlerMethod)
         {
-            Long startTime = THREAD_LOCAL.get();
-            long runTime = endTime - startTime;
-            String uri = request.getRequestURI();
-            String methodName = method.getDeclaringClass().getName() + "." + method.getName();
-            String desc = log.desc();
-            logger.info("请求的url：" + uri + "，方法名：" + methodName + "，描述：" + desc + "，运行时间：" + runTime);
+            long endTime = System.currentTimeMillis();
+            HandlerMethod handlerMethod = (HandlerMethod) handler;
+            Method method = handlerMethod.getMethod();
+            Log log = method.getAnnotation(Log.class);
+            if (log != null)
+            {
+                Long startTime = THREAD_LOCAL.get();
+                long runTime = endTime - startTime;
+                String uri = request.getRequestURI();
+                String methodName = method.getDeclaringClass().getName() + "." + method.getName();
+                String desc = log.desc();
+                logger.info("请求的url：" + uri + "，方法名：" + methodName + "，描述：" + desc + "，运行时间：" + runTime + "ms");
+            }
         }
     }
 }
